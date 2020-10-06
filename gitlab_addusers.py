@@ -30,15 +30,16 @@ except Exception as er:
   print(str(er))
   sys.exit(1)
 
+# Password of each user that created with this script, Minimun characters is 8
 password = 'password'
-
 print("====================================================")
-
+print("Begin create GitLab's user(s)...")
 for i in range(len(users)):
   try:
-    user = gl.users.create({'email': users[i] +'@example.com' , 'password': users[i] , 'username': users[i], 'name': users[i], 'skip_confirmation': True})
+    user = gl.users.create({'email': users[i] +'@example.com' , 'password': password , 'username': users[i], 'name': users[i], 'skip_confirmation': True})
     user.save()
     print("Create user " + user.name + " successfull")
   except Exception as er:
-    print(str(er))
+    print("Unable to create user", str(er))
     sys.exit(1)
+print("Success !")
