@@ -4,13 +4,28 @@ import gitlab
 import time
 import os
 import sys
+import random
+import string
 
-users = []
+# Users setup
+users = [
+  {
+    username = "example"
+    fullname = "firstName lastName"
+    email = "example@gmail.com"
+  }
+]
+
 parser = argparse.ArgumentParser(description = ''' Migration Scripts for Gitlab. ''')
 parser.add_argument('--token',required=True, type=str, help='API token for access gitlab')
 parser.add_argument('--url',required=True, type=str, help='Gitlab url address')
 parser.add_argument('--ignore-ssl',required=False, type=bool, const=True, nargs='?', default=False, help='ignore ssl certifcate')
 args = parser.parse_args()
+
+def random_password(length):
+  characters = string.ascii_letters + string.digits + string.punctuation
+  password = ''.join(random.choice(characters) for i in range(length))
+  return password
 
 print("====================================================")
 print("Setup option to connect Gitlab...")
@@ -31,12 +46,12 @@ except Exception as er:
   sys.exit(1)
 
 # Password of each user that created with this script, Minimun characters is 8
-password = 'password'
 print("====================================================")
 print("Begin create GitLab's user(s)...")
 for i in range(len(users)):
   try:
-    user = gl.users.create({'email': users[i] +'@example.com' , 'password': password , 'username': users[i], 'name': users[i], 'skip_confirmation': True})
+    password = random_password(8)
+    user = gl.users.create({'email': users[i].email , 'password': password , 'username': users[i].username, 'name': users[i].fullname})
     user.save()
     print("Create user " + user.name + " successfull")
   except Exception as er:
