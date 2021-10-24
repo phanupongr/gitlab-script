@@ -22,10 +22,22 @@ parser.add_argument('--url',required=True, type=str, help='Gitlab url address')
 parser.add_argument('--ignore-ssl',required=False, type=bool, const=True, nargs='?', default=False, help='ignore ssl certifcate')
 args = parser.parse_args()
 
+# Random password
 def random_password(length):
   characters = string.ascii_letters + string.digits + string.punctuation
   password = ''.join(random.choice(characters) for i in range(length))
   return password
+
+# Create user
+def create_gitlab_user(fullname, email, username, password):
+  user = gl.users.create({
+    'name': users[i].fullname,
+    'email': users[i].email,
+    'username': users[i].username,
+    'password': password
+    })
+  user.save()
+  return user
 
 print("====================================================")
 print("Setup option to connect Gitlab...")
@@ -50,9 +62,7 @@ print("====================================================")
 print("Begin create GitLab's user(s)...")
 for i in range(len(users)):
   try:
-    password = random_password(8)
-    user = gl.users.create({'email': users[i].email , 'password': password , 'username': users[i].username, 'name': users[i].fullname})
-    user.save()
+    user = create_gitlab_user(users[i].fullname, users[i].email, users[i].username, password)
     print("Create user " + user.name + " successfull")
   except Exception as er:
     print("Unable to create user", str(er))
